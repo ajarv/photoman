@@ -6,15 +6,19 @@ multiple computers and folders.
 This project helps you consolidate and index your photos at one location using the date of your photos to index them
 
 e.g. if you have photos spread around these folders 
+
+```
 mypictures/DCIM/23332XX/DSC_9392.JPG
 mypictures/one/DSC_4233.JPG 
 abc/232/DSC_6344.JPG
+```
 
 This project will help you get them in the order
+```
 <DESTINATION FOLDER>/ORIGN/2019/03/01/DSC_9392.JPG
 <DESTINATION FOLDER>/ORIGN/2019/02/13/DSC_4233.JPG
 <DESTINATION FOLDER>/ORIGN/2017/03/01/DSC_6344.JPG
-
+```
 
 
 1. Create Docker image
