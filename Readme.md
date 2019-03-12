@@ -39,8 +39,11 @@ Copy/Dump all your photo folders ...  to  `/tmp/rawin`
 
 3. Run docker container
 
+```bash
+projectspacec=$(pwd)
 docker run  -t  \
 -v /tmp/rawin:/p/in \
 -v ~/PhotoVault:/p/out \
--v /home/ajar/workspace/photo-manage:/work \
+-v ${projectspace}:/work \
 photoman python  /work/src/photo_manage.py --inputFolder /p/in --outputFolder /p/out 
+```
