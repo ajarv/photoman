@@ -5,6 +5,9 @@ import sys
 JPGPAT = re.compile(".*[.](jpg)$", re.IGNORECASE)
 
 def folder_listing_json(folder):
+    '''
+    Generates a json listing for JPEG files
+    '''
     _ofiles = []
     _folder = os.path.abspath(folder)
     _fl = len (_folder)
