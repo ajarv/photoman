@@ -40,10 +40,13 @@ Copy/Dump all your photo folders ...  to  `/tmp/rawin`
 3. Run docker container
 
 ```bash
-projectspacec=$(pwd)
+projectspace=$(pwd)
+vault=/mnt/ssd/avashist/PhotoVault/vault
+rawin=/mnt/ssd/avashist/rawin
+
 docker run  -t  \
--v /tmp/rawin:/p/in \
--v ~/PhotoVault:/p/out \
+-v ${rawin}:/p/in \
+-v ${vault}:/p/out \
 -v ${projectspace}:/work \
 photoman python  /work/src/photo_manage.py --inputFolder /p/in --outputFolder /p/out 
 
@@ -53,13 +56,32 @@ photoman python  /work/src/photo_manage.py --inputFolder /p/in --outputFolder /p
 4. Create JSON Index of files
 
 ```bash
-projectspacec=$(pwd)
+projectspace=$(pwd)
 vault=/mnt/ssd/avashist/PhotoVault/vault
+rawin=/mnt/ssd/avashist/rawin
 
-docker run  -t  \
+docker run  -t  --rm \
 -v  ${vault}:/vault \
 -v ${projectspace}:/work \
-photoman python  /work/src/photo_listings.py -/vault/ORIGN 
+photoman python  /work/src/photo_listings.py /vault/ORIGN 
+
+docker run  -t  --rm \
+-v  ${vault}:/vault \
+-v ${projectspace}:/work \
+photoman python  /work/src/photo_listings.py /vault/S2000 
+
+docker run  -t  --rm \
+-v  ${vault}:/vault \
+-v ${projectspace}:/work \
+photoman python  /work/src/photo_listings.py /vault/S0300 
+
+
+
+docker run  -t  --rm \
+-v  ${vault}:/vault \
+-v ${projectspace}:/work \
+photoman python  /work/src/photo_index_01.py /vault 
+
 
 ```
 

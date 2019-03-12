@@ -1,0 +1,13 @@
+vu/.DS_Store
+vu/node_modules/
+vu/dist/
+vu/npm-debug.log*
+vu/yarn-debug.log*
+vu/yarn-error.log*
+
+# Editor directories and files
+.idea
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
