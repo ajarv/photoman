@@ -46,4 +46,5 @@ docker run  -t  \
 -v ~/PhotoVault:/p/out \
 -v ${projectspace}:/work \
 photoman python  /work/src/photo_manage.py --inputFolder /p/in --outputFolder /p/out 
+
 ```
