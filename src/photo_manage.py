@@ -171,8 +171,10 @@ def make_tns(folder):
         files =[file for file in files if JPGPAT.match(file)]
         file_paths = [join(root, name) for name in files]
         for sfile in file_paths:
-            dfile = sfile.replace("ORIGN",'S2000')
-            resize_image(sfile,dfile,[2000,2000],quality=80)
+            dfile2000 = sfile.replace("ORIGN",'S2000')
+            resize_image(sfile,dfile2000,[2000,2000],quality=80)
+            dfile0300 = sfile.replace("ORIGN",'S0300')
+            resize_image(dfile2000,dfile0300,[300,300],quality=70)
 
 def parse_args():
     """Parse the args."""

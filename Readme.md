@@ -48,3 +48,20 @@ docker run  -t  \
 photoman python  /work/src/photo_manage.py --inputFolder /p/in --outputFolder /p/out 
 
 ```
+
+
+4. Create JSON Index of files
+
+```bash
+projectspacec=$(pwd)
+vault=/mnt/ssd/avashist/PhotoVault/vault
+
+docker run  -t  \
+-v  ${vault}:/vault \
+-v ${projectspace}:/work \
+photoman python  /work/src/photo_listings.py -/vault/ORIGN 
+
+```
+
+
+
