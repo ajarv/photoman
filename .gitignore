@@ -1,6 +1,8 @@
 vu/.DS_Store
 vu/node_modules/
-vu/dist/
+vu/dist
+vu/build
+vu/article
 vu/npm-debug.log*
 vu/yarn-debug.log*
 vu/yarn-error.log*
