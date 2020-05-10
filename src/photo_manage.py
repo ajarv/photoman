@@ -111,7 +111,7 @@ def orderFileList(file_paths):
 JPGPAT= re.compile(".*[.](jpg|nef)$",re.IGNORECASE)
 MOVPAT= re.compile(".*[.](mp4|mov)$",re.IGNORECASE)
 
-def process(source,destination):
+def process(source,destination,dry_run=False):
     for root, dirs, files in os.walk(source):
         print ("Working on ",root)
         files =[file for file in files if JPGPAT.match(file) or MOVPAT.match(file)]
@@ -141,28 +141,30 @@ def process(source,destination):
             if not os.path.exists(ddir):
                 os.makedirs(ddir)
             if os.path.exists(dfile) :
-                s1 ,s2 = os.path.getsize(dfile),os.path.getsize(sfile)
-                if s1 >= s2:
-                    print (sfile ," {1} -x- {0} >".format(s1,s2),dfile, ' ', timetakenstr)
-                    os.remove(sfile)
-                    print ("Removed ",sfile)
-                    continue
+                sz_dest ,sz_src = os.path.getsize(dfile),os.path.getsize(sfile)
+                if sz_dest >= sz_src:
+                    print (f"{timetakenstr}: KEEPING DEST {dfile} [{sz_dest}] > [{sz_src}] {sfile}")
+                    if not dry_run:
+                        os.remove(sfile)
                 else:
-                    print (sfile ," {1} -f- {0} >".format(s1,s2),dfile, ' ', timetakenstr)
+                    print (f"{timetakenstr}: UPDATING DEST {dfile} [{sz_dest}] < [{sz_src}] {sfile}")
                     dtemp = dfile+"_"
-                    shutil.move(dfile,dtemp)
-                    shutil.move(sfile,dfile)
-                    os.remove(dtemp)
-                    continue
+                    if not dry_run:
+                        shutil.move(dfile,dtemp)
+                        shutil.move(sfile,dfile)
+                        os.remove(dtemp)
             else:
-                shutil.move(sfile,dfile)
-                print (sfile ," ->",dfile, ' ', timetakenstr)
-        try:
-            os.removedirs(root)
-            print ("Success   Remove ",root)
-        except:
-            print ("Failed to Remove ",root)
-            pass
+                print (f"{timetakenstr}: CREATING {dfile} <- {sfile}") ")
+                if not dry_run:
+                    shutil.move(sfile,dfile)
+
+        if not dry_run:
+            try:
+                os.removedirs(root)
+                print ("Success   Remove ",root)
+            except:
+                print ("Failed to Remove ",root)
+                pass
 
 def make_tns(folder):
     origns = os.path.join(folder,'ORIGN')
@@ -186,11 +188,14 @@ def parse_args():
     parser.add_argument('--outputFolder', type=str, required=False,
                         default='vault',
                         help='Destination path for photos')
+    parser.add_argument('--dry-run', type=bool, required=False,
+                        default=False,
+                        help='Dry Run no changes')
     return parser.parse_args()
 
 			
 			
 if __name__ == "__main__":
     args = parse_args()
-    process(args.inputFolder,args.outputFolder)
+    process(args.inputFolder,args.outputFolder,args.dry_run)
     make_tns(args.outputFolder)
