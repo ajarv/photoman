@@ -154,7 +154,7 @@ def process(source,destination,dry_run=False):
                         shutil.move(sfile,dfile)
                         os.remove(dtemp)
             else:
-                print (f"{timetakenstr}: CREATING {dfile} <- {sfile}") ")
+                print (f"{timetakenstr}: CREATING {dfile} <- {sfile}")
                 if not dry_run:
                     shutil.move(sfile,dfile)
 
