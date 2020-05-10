@@ -1,4 +1,4 @@
-FROM python:3.8.2-alpine3.10
+FROM python:3.7
 
 LABEL com.sn8t.id=not-assigned
 LABEL com.sn8t.version=not-assigned
