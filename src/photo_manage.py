@@ -143,7 +143,7 @@ def process(source,destination,dry_run=False):
             if os.path.exists(dfile) :
                 sz_dest ,sz_src = os.path.getsize(dfile),os.path.getsize(sfile)
                 if sz_dest >= sz_src:
-                    print (f"{timetakenstr}: KEEPING DEST {dfile} [{sz_dest}] > [{sz_src}] {sfile}")
+                    print (f"{timetakenstr}: KEEPING DEST {dfile} [{sz_dest}] >= [{sz_src}] {sfile}")
                     if not dry_run:
                         os.remove(sfile)
                 else:
