@@ -1,4 +1,8 @@
-FROM python
+FROM python:3.8.2-alpine3.10
+
+LABEL com.sn8t.id=not-assigned
+LABEL com.sn8t.version=not-assigned
+LABEL com.sn8t.author.email=ajar.vashisth@gmail.com
 
 WORKDIR /work
 COPY  requirements.txt /work
