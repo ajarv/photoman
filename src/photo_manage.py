@@ -30,7 +30,7 @@ def timeit_w_args_n_r(method):
         except:
             result = None
             te = time.time()
-            logging.error( '%r (%s) -> %r  ,%2.2f sec , FAIL' % \
+            logging.exception( '%r (%s) -> %r  ,%2.2f sec , FAIL' % \
                   (method.__name__, str(args), result, te - ts))
         return result
     return timed
@@ -62,7 +62,6 @@ def get_image_creation_date_time(image_source_path):
 def resize_image(source_path, dest_path, size, ximage=None, quality=85, sharpen=True,_timeTaken=None):
     _dir = os.path.split(dest_path)[0]
     if not os.path.exists(_dir) : os.makedirs(_dir)
-
 
     if os.path.exists(dest_path):
         print ("Resized image exists -",dest_path)
@@ -166,17 +165,34 @@ def process(source,destination,dry_run=False):
                 print ("Failed to Remove ",root)
                 pass
 
+def filtered_list(files):
+    rfiles = []
+    for file in files:
+        exif_dict = piexif.load(source_path)
+        # process im and exif_dict...
+        w, h = image.size
+        l = max(w,h)
+        if l > 800:
+            rfiles.append(file)
+    return rfiles
+
 def make_tns(folder):
     origns = os.path.join(folder,'ORIGN')
     for root, dirs, files in sorted(os.walk(origns),reverse=True):
         print ("Working on ",root)
         files =[file for file in files if JPGPAT.match(file)]
         file_paths = [join(root, name) for name in files]
+        file_paths = filtered_list(file_paths)
+
         for sfile in file_paths:
-            dfile2000 = sfile.replace("ORIGN",'S2000')
-            resize_image(sfile,dfile2000,[2000,2000],quality=80)
+            if ' ' in sfile:
+                sfile1 = sfile.replace(' ','-')
+                os.rename(sfile,sfile1)
+                sfile = sfile1
+            dfile2000 = sfile.replace("ORIGN",'S1600')
+            resize_image(sfile, dfile2000, [1600,1600], quality=75)
             dfile0300 = sfile.replace("ORIGN",'S0300')
-            resize_image(dfile2000,dfile0300,[300,300],quality=70)
+            resize_image(sfile, dfile0300, [300, 300], quality=65)
 
 def parse_args():
     """Parse the args."""
