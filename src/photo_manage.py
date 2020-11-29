@@ -189,8 +189,8 @@ def make_tns(folder):
                 sfile1 = sfile.replace(' ','-')
                 os.rename(sfile,sfile1)
                 sfile = sfile1
-            dfile2000 = sfile.replace("ORIGN",'S1600')
-            resize_image(sfile, dfile2000, [1600,1600], quality=75)
+            dfile2000 = sfile.replace("ORIGN",'S2000')
+            resize_image(sfile, dfile2000, [2000,2000], quality=75)
             dfile0300 = sfile.replace("ORIGN",'S0300')
             resize_image(sfile, dfile0300, [300, 300], quality=65)
 
