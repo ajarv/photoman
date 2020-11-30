@@ -170,12 +170,18 @@ def process(source,destination,dry_run=False,keep=False):
 def filtered_list(files):
     rfiles = []
     for file in files:
-        image = Image.open(file)
-        # process im and exif_dict...
-        w, h = image.size
-        l = max(w,h)
-        if l > 800:
-            rfiles.append(file)
+        try:
+            image = Image.open(file)
+            # process im and exif_dict...
+            w, h = image.size
+            l = max(w, h)
+            if l > 800:
+                rfiles.append(file)
+            pass
+        except :
+            print(f"Possibly bad image file {file} skipping")
+            continue
+            pass
     return rfiles
 
 def make_tns(folder):
