@@ -110,7 +110,7 @@ def orderFileList(file_paths):
 JPGPAT= re.compile(".*[.](jpg|nef)$",re.IGNORECASE)
 MOVPAT= re.compile(".*[.](mp4|mov)$",re.IGNORECASE)
 
-def process(source,destination,dry_run=False):
+def process(source,destination,dry_run=False,keep=False):
     for root, dirs, files in os.walk(source):
         print ("Working on ",root)
         files =[file for file in files if JPGPAT.match(file) or MOVPAT.match(file)]
@@ -144,20 +144,22 @@ def process(source,destination,dry_run=False):
                 if sz_dest >= sz_src:
                     print (f"{timetakenstr}: KEEPING DEST {dfile} [{sz_dest}] >= [{sz_src}] {sfile}")
                     if not dry_run:
-                        os.remove(sfile)
+                        if not keep:
+                            os.remove(sfile)
                 else:
                     print (f"{timetakenstr}: UPDATING DEST {dfile} [{sz_dest}] < [{sz_src}] {sfile}")
                     dtemp = dfile+"_"
                     if not dry_run:
                         shutil.move(dfile,dtemp)
+                        if not keep:
+                            os.remove(dtemp)
                         shutil.move(sfile,dfile)
-                        os.remove(dtemp)
             else:
                 print (f"{timetakenstr}: CREATING {dfile} <- {sfile}")
                 if not dry_run:
                     shutil.move(sfile,dfile)
 
-        if not dry_run:
+        if not (dry_run or keep) :
             try:
                 os.removedirs(root)
                 print ("Success   Remove ",root)
@@ -183,7 +185,6 @@ def make_tns(folder):
         files =[file for file in files if JPGPAT.match(file)]
         file_paths = [join(root, name) for name in files]
         file_paths = filtered_list(file_paths)
-
         for sfile in file_paths:
             if ' ' in sfile:
                 sfile1 = sfile.replace(' ','-')
@@ -204,6 +205,9 @@ def parse_args():
     parser.add_argument('--outputFolder', type=str, required=False,
                         default='vault',
                         help='Destination path for photos')
+    parser.add_argument('--keep', type=bool, required=False,
+                        default=False,
+                        help='Keep the input files')
     parser.add_argument('--dry-run', type=bool, required=False,
                         default=False,
                         help='Dry Run no changes')
