@@ -170,7 +170,7 @@ def process(source,destination,dry_run=False,keep=False):
 def filtered_list(files):
     rfiles = []
     for file in files:
-        exif_dict = piexif.load(source_path)
+        image = Image.open(file)
         # process im and exif_dict...
         w, h = image.size
         l = max(w,h)
