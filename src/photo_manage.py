@@ -175,7 +175,7 @@ def filtered_list(files):
             # process im and exif_dict...
             w, h = image.size
             l = max(w, h)
-            if l > 800:
+            if l >= 1200:
                 rfiles.append(file)
             pass
         except :
