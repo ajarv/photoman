@@ -107,7 +107,7 @@ def orderFileList(file_paths):
         dd = tree.get(_d,[]) ; tree[_d] = dd
         dd.append(file_path)
 
-JPGPAT= re.compile(".*[.](jpg|nef)$",re.IGNORECASE)
+JPGPAT= re.compile(".*[.](jpg|nef|arw)$",re.IGNORECASE)
 MOVPAT= re.compile(".*[.](mp4|mov)$",re.IGNORECASE)
 
 def process(source,destination,dry_run=False,keep=False):
