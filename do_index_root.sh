@@ -23,7 +23,7 @@ vault=${vault:-/mnt/ssd/avashist/PhotoVault/vault}
 rawin=${rawin:-/mnt/ssd/avashist/rawin}
 
 docker run  -t \
-        -u 1000 \
+        -u root \
         -v ${rawin}:/p/in \
         -v ${vault}:/p/out \
         -v ${projectspace}:/work \
@@ -31,9 +31,15 @@ docker run  -t \
 
 
 docker run  -t  --rm \
-        -u 1000 \
+        -u root \
         -v  ${vault}:/vault \
         -v ${projectspace}:/work \
         photoman python  /work/src/photo_listings.py /vault/ORIGN
+
+docker run  -t  --rm \
+        -u root \
+        -v  ${vault}:/vault \
+        -v ${projectspace}:/work \
+        photoman python  /work/src/photo_listings.py /vault/S2000
 
 set +x
