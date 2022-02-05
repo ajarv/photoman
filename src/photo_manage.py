@@ -14,14 +14,14 @@ from os.path import join, getsize
 from PIL import Image,ImageFilter
 import argparse
 import logging
-
+import i_util
 logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',level=logging.WARN)
 
 def timeit_w_args_n_r(method):
     def timed(*args, **kw):
         ts = time.time()
-#         print 'Begin -- %r (%s) ' % \
-#               (method.__name__, str(args))
+        #         print 'Begin -- %r (%s) ' % \
+        #               (method.__name__, str(args))
         try:
             result = method(*args, **kw)
             te = time.time()
@@ -35,28 +35,12 @@ def timeit_w_args_n_r(method):
         return result
     return timed
 
-@timeit_w_args_n_r
-def get_image_creation_date_time(image_source_path):
-    def dateFromExifInfo():
-        try:
-            exif_dict = piexif.load(image_source_path)
-            ifd = "Exif"
-            readable_dict = {piexif.TAGS[ifd][tag]["name"] : exif_dict[ifd][tag] for tag in exif_dict[ifd]}
-            dateTimeTaken = readable_dict['DateTimeOriginal'].decode()
-            dateTimeTaken = [ int(t) for t in dateTimeTaken.replace(":"," ").split(" ")]
-            dateTimeTaken+=[0,0,0]
-            dateTimeTaken = tuple(dateTimeTaken)
-            return time.mktime(dateTimeTaken)
-        except:
-            logging.info("Failed to get Date from exif {0}".format( image_source_path))
-            return None
-        
-    def dateFromFileCTime():
-        mtime = os.path.getmtime(image_source_path)
-        return mtime
-
-    _t =  dateFromExifInfo() or dateFromFileCTime()
-    return _t
+def reject_file(origin_path):
+    rfile = origin_path.replace('ORIGN','REJECT')
+    dir_name,f = os.path.split(rfile)
+    os.makedirs(dir_name,exist_ok=True)
+    shutil.move(origin_path,rfile)
+    print (f"Moved to Rejects {origin_path} -> {rfile}")
 
 @timeit_w_args_n_r
 def resize_image(source_path, dest_path, size, ximage=None, quality=85, sharpen=True,_timeTaken=None):
@@ -67,7 +51,7 @@ def resize_image(source_path, dest_path, size, ximage=None, quality=85, sharpen=
         print ("Resized image exists -",dest_path)
         return
 
-    timetaken = _timeTaken or get_image_creation_date_time(source_path)
+    timetaken = _timeTaken or i_util.get_image_creation_date_time(source_path)
 
     _dest_path = dest_path+".tmp"
     if os.path.exists(_dest_path):
@@ -80,22 +64,26 @@ def resize_image(source_path, dest_path, size, ximage=None, quality=85, sharpen=
     exif_dict["0th"][piexif.ImageIFD.XResolution] = (w, 1)
     exif_dict["0th"][piexif.ImageIFD.YResolution] = (h, 1)
     exif_bytes = piexif.dump(exif_dict)
-    image.thumbnail(size, Image.ANTIALIAS )
+    try:
+        image.thumbnail(size, Image.ANTIALIAS )
+    except:
+        reject_file(source_path)
+        return False
     image = image.filter(ImageFilter.SHARPEN)
     image.save(_dest_path, "JPEG", quality=quality,exif_bytes=exif_bytes)
     # # copy EXIF data
-    # sexif = pyexiv2.ImageMetadata(source_path)
-    # sexif.read()
-    # dexif = pyexiv2.ImageMetadata(_dest_path)
-    # dexif.read()
-    # sexif.copy(dexif)
+    sexif = pyexiv2.ImageMetadata(source_path)
+    sexif.read()
+    dexif = pyexiv2.ImageMetadata(_dest_path)
+    dexif.read()
+    sexif.copy(dexif)
     # # set EXIF image size info to resized size
-    # dexif["Exif.Photo.PixelXDimension"] = image.size[0]
-    # dexif["Exif.Photo.PixelYDimension"] = image.size[1]
-    # dexif.write(preserve_timestamps=True)
+    dexif["Exif.Photo.PixelXDimension"] = image.size[0]
+    dexif["Exif.Photo.PixelYDimension"] = image.size[1]
+    dexif.write(preserve_timestamps=True)
     os.rename(_dest_path,dest_path)
     os.utime(dest_path,(timetaken,timetaken))
-
+    return True
 
 
 def orderFileList(file_paths):
@@ -110,63 +98,6 @@ def orderFileList(file_paths):
 JPGPAT= re.compile(".*[.](jpg|nef|arw)$",re.IGNORECASE)
 MOVPAT= re.compile(".*[.](mp4|mov)$",re.IGNORECASE)
 
-def process(source,destination,dry_run=False,keep=False):
-    for root, dirs, files in os.walk(source):
-        print ("Working on ",root)
-        files =[file for file in files if JPGPAT.match(file) or MOVPAT.match(file)]
-        #-- Date Groups
-        file_paths = [join(root, name) for name in files]
-        date_groups = {}
-        for file_path in file_paths:
-            _timetaken = get_image_creation_date_time(file_path)
-            _tt = time.strftime('%Y-%m-%d',time.localtime(_timetaken))
-            # _t = time.strftime('%y-%m-%d',time.localtime(os.path.getmtime(file_path)))
-            _g = date_groups.get(_tt,[])
-            _g.append([len(_g),_timetaken,_tt,file_path])
-            date_groups[_tt] = _g
-        jumbled_list = []
-        for v in date_groups.values():
-            jumbled_list.extend(v)
-        jumbled_list.sort()
-        jumbled_list = [ l[1:] for l in jumbled_list ]
-
-        # for name in files:
-        #     sfile = join(root, name)
-        for (timetaken,timetakenstr,sfile) in jumbled_list:
-            _dest = os.path.join(destination,'ORIGN',*timetakenstr.split('-'))
-            file_name = os.path.split(sfile)[-1]
-            dfile = os.path.join(_dest,file_name)
-            ddir = os.path.dirname(dfile)
-            if not os.path.exists(ddir):
-                os.makedirs(ddir)
-            if os.path.exists(dfile) :
-                sz_dest ,sz_src = os.path.getsize(dfile),os.path.getsize(sfile)
-                if sz_dest >= sz_src:
-                    print (f"{timetakenstr}: KEEPING DEST {dfile} [{sz_dest}] >= [{sz_src}] {sfile}")
-                    if not dry_run:
-                        if not keep:
-                            os.remove(sfile)
-                else:
-                    print (f"{timetakenstr}: UPDATING DEST {dfile} [{sz_dest}] < [{sz_src}] {sfile}")
-                    dtemp = dfile+"_"
-                    if not dry_run:
-                        shutil.move(dfile,dtemp)
-                        if not keep:
-                            os.remove(dtemp)
-                        shutil.move(sfile,dfile)
-            else:
-                print (f"{timetakenstr}: CREATING {dfile} <- {sfile}")
-                if not dry_run:
-                    shutil.move(sfile,dfile)
-
-        if not (dry_run or keep) :
-            try:
-                os.removedirs(root)
-                print ("Success   Remove ",root)
-            except:
-                print ("Failed to Remove ",root)
-                pass
-
 def filtered_list(files):
     rfiles = []
     for file in files:
@@ -180,12 +111,25 @@ def filtered_list(files):
             pass
         except :
             print(f"Possibly bad image file {file} skipping")
+            reject_file(file)
             continue
             pass
     return rfiles
 
+def build_file_set(destination_folder):
+    rval = set()
+    try:
+        for root, dirs, files in os.walk(destination_folder):
+            rval = rval.union(set( [join(root, name) for name in files]))
+    except:
+        logging.exception("Failed to generate the destination folder listing")
+    return rval
+
 def make_tns(folder):
     origns = os.path.join(folder,'ORIGN')
+    existing_file_set = build_file_set(folder)
+    for f in sorted(list(existing_file_set)):
+        print (f)
     for root, dirs, files in sorted(os.walk(origns),reverse=True):
         print ("Working on ",root)
         files =[file for file in files if JPGPAT.match(file)]
@@ -197,9 +141,12 @@ def make_tns(folder):
                 os.rename(sfile,sfile1)
                 sfile = sfile1
             dfile2000 = sfile.replace("ORIGN",'S2000')
-            resize_image(sfile, dfile2000, [2000,2000], quality=75)
+            ok = True
+            if dfile2000 not in existing_file_set and ok:  
+                ok = resize_image(sfile, dfile2000, [2000,2000], quality=75)
             dfile0300 = sfile.replace("ORIGN",'S0300')
-            resize_image(sfile, dfile0300, [300, 300], quality=65)
+            if dfile0300 not in existing_file_set and ok:
+                resize_image(sfile, dfile0300, [300, 300], quality=65)
 
 def parse_args():
     """Parse the args."""
@@ -219,9 +166,8 @@ def parse_args():
                         help='Dry Run no changes')
     return parser.parse_args()
 
-			
-			
+
+
 if __name__ == "__main__":
     args = parse_args()
-    process(args.inputFolder,args.outputFolder,args.dry_run)
     make_tns(args.outputFolder)

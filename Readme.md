@@ -73,7 +73,7 @@ photoman python  /work/src/photo_listings.py /vault/S2000
 docker run  -t  --rm \
 -v  ${vault}:/vault \
 -v ${projectspace}:/work \
-photoman python  /work/src/photo_listings.py /vault/S0300 
+photoman python /work/src/photo_listings.py /vault/S0300 
 
 
 
@@ -86,4 +86,21 @@ photoman python  /work/src/photo_index_01.py /vault
 ```
 
 
+
+```bash
+
+./do_index.sh -i /mnt/ssd/raw  -o /mnt/ssd/avashist/PhotoVault/vault
+
+
+./do_arrange.sh -s /mnt/ssd/raw  -d /mnt/ssd/avashist/PhotoVault/vault
+
+
+## Create listings
+docker run  -t  --rm \
+        -u 1000 \
+        -v  /mnt/ssd/avashist/PhotoVault/vault:/vault \
+        -v /home/ajar/workspace/photo-manager:/work \
+        photoman python  /work/src/photo_listings.py /vault/S2000
+
+```
 
