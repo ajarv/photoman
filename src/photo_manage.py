@@ -152,22 +152,13 @@ def parse_args():
     """Parse the args."""
     parser = argparse.ArgumentParser(
         description='Index Photos into a folder structure')
-    parser.add_argument('--inputFolder', type=str, required=False,
-                        default='sandbox',
-                        help='Folder Path to Scan')
-    parser.add_argument('--outputFolder', type=str, required=False,
+    parser.add_argument('--vault', type=str, required=False,
                         default='vault',
                         help='Destination path for photos')
-    parser.add_argument('--keep', type=bool, required=False,
-                        default=False,
-                        help='Keep the input files')
-    parser.add_argument('--dry-run', type=bool, required=False,
-                        default=False,
-                        help='Dry Run no changes')
     return parser.parse_args()
 
 
 
 if __name__ == "__main__":
     args = parse_args()
-    make_tns(args.outputFolder)
+    make_tns(args.vault)

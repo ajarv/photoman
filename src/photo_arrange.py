@@ -48,6 +48,7 @@ def orderFileList(file_paths):
         dd.append(file_path)
 
 def arrange_files_by_date(source,destination,dry_run=False,keep=False):
+    print("arrange_files_by_date ", source, destination, dry_run,keep)
     # existing_dest_file_set = build_file_set(destination)
     for root, dirs, files in os.walk(source):
         print ("Working on ",root)
@@ -59,19 +60,18 @@ def arrange_files_by_date(source,destination,dry_run=False,keep=False):
         file_paths = [join(root, name) for name in files]
         date_groups = collections.defaultdict(list)
         for file_path in file_paths:
-            _timetaken = i_util.get_image_creation_date_time(file_path)
-            _date = time.strftime('%Y-%m-%d',time.localtime(_timetaken))
+            _date = i_util.get_image_creation_date(file_path)
             date_groups[_date].append(file_path)
         for date_Y_M_D,file_list in date_groups.items():
-            send_to_date_bins(destination,date_Y_M_D,file_list,dry_run=dry_run)
+            send_to_date_bins(destination,date_Y_M_D,file_list,dry_run=dry_run,keep=keep)
 
-    if not (dry_run or keep) :
-        try:
-            os.removedirs(root)
-            print ("Success   Remove ",root)
-        except:
-            print ("Failed to Remove ",root)
-            pass
+        if not dry_run and not keep:
+            try:
+                os.rmdir(root)
+                print ("Success   Remove ",root)
+            except:
+                print ("Failed to Remove ",root)
+                pass
 
 def send_to_date_bins(destination,timetakenstr,file_list,dry_run=False,keep=False):
 
@@ -104,7 +104,7 @@ def send_to_date_bins(destination,timetakenstr,file_list,dry_run=False,keep=Fals
             print (f"{timetakenstr}: CREATING {dfile} <- {sfile}")
             if not dry_run:
                 try:
-                    shutil.move(sfile, dfile, copy_function=do_copy_parrot)
+                    shutil.move(sfile, dfile)
                 except:
                     logging.exception("xxxx")
                     print(f"Failed to move {sfile} -> {dfile}")
@@ -134,11 +134,11 @@ def parse_args():
                         default='vault',
                         help='Destination path for photos')
     parser.add_argument('--dry_run',
-                        default=True,
+                        default=False,
                         help='Dry Run',
                         action=argparse.BooleanOptionalAction)
     parser.add_argument('--keep',
-                        default=True,
+                        default=False,
                         help='Keep the input files',
                         action=argparse.BooleanOptionalAction)
 

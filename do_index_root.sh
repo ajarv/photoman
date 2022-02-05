@@ -19,15 +19,13 @@ done
 shift "$(($OPTIND -1))"
 set -x
 projectspace=$(pwd)
-vault=${vault:-/mnt/ssd/avashist/PhotoVault/vault}
-rawin=${rawin:-/mnt/ssd/avashist/rawin}
+vault=${vault:-/mnt/5tb/PhotoVault/vault}
 
 docker run  -t \
         -u root \
-        -v ${rawin}:/p/in \
         -v ${vault}:/p/out \
         -v ${projectspace}:/work \
-        photoman python  /work/src/photo_manage.py --inputFolder /p/in --outputFolder /p/out
+        photoman python  /work/src/photo_manage.py --vault /p/out
 
 
 docker run  -t  --rm \
