@@ -59,6 +59,7 @@ def get_image_creation_date(image_source_path):
     )
     return time_stamp
 
+
 def get_image_creation_date_time(image_source_path):
     def dateFromExifInfo():
         try:
