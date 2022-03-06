@@ -1,2 +1,3 @@
 piexif==1.1.3
 Pillow==7.1.2
+rethinkdb

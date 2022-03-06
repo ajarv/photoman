@@ -55,8 +55,7 @@ def get_image_creation_date(image_source_path):
             f"DATE from file Timestamp for {image_source_path} {stamp}")
         return stamp
 
-    time_stamp = dateFromExifInfo() or dateFromFileName() or dateFromFileCTime(
-    )
+    time_stamp = dateFromExifInfo() or dateFromFileName() or dateFromFileCTime()
     return time_stamp
 
 

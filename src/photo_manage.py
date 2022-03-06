@@ -5,6 +5,7 @@ Created on Dec 29, 2011
 '''
 
 import piexif
+# import pyexiv2
 import os
 import re
 import sys
@@ -63,6 +64,8 @@ def resize_image(source_path, dest_path, size, ximage=None, quality=85, sharpen=
     w, h = image.size
     exif_dict["0th"][piexif.ImageIFD.XResolution] = (w, 1)
     exif_dict["0th"][piexif.ImageIFD.YResolution] = (h, 1)
+    if 'thumbnail' in exif_dict:
+        del exif_dict['thumbnail']
     exif_bytes = piexif.dump(exif_dict)
     try:
         image.thumbnail(size, Image.ANTIALIAS )
@@ -71,16 +74,16 @@ def resize_image(source_path, dest_path, size, ximage=None, quality=85, sharpen=
         return False
     image = image.filter(ImageFilter.SHARPEN)
     image.save(_dest_path, "JPEG", quality=quality,exif_bytes=exif_bytes)
-    # # copy EXIF data
-    sexif = pyexiv2.ImageMetadata(source_path)
-    sexif.read()
-    dexif = pyexiv2.ImageMetadata(_dest_path)
-    dexif.read()
-    sexif.copy(dexif)
-    # # set EXIF image size info to resized size
-    dexif["Exif.Photo.PixelXDimension"] = image.size[0]
-    dexif["Exif.Photo.PixelYDimension"] = image.size[1]
-    dexif.write(preserve_timestamps=True)
+    # # # copy EXIF data
+    # sexif = pyexiv2.ImageMetadata(source_path)
+    # sexif.read()
+    # dexif = pyexiv2.ImageMetadata(_dest_path)
+    # dexif.read()
+    # sexif.copy(dexif)
+    # # # set EXIF image size info to resized size
+    # dexif["Exif.Photo.PixelXDimension"] = image.size[0]
+    # dexif["Exif.Photo.PixelYDimension"] = image.size[1]
+    # dexif.write(preserve_timestamps=True)
     os.rename(_dest_path,dest_path)
     os.utime(dest_path,(timetaken,timetaken))
     return True
@@ -142,7 +145,7 @@ def make_tns(folder):
                 sfile = sfile1
             dfile2000 = sfile.replace("ORIGN",'S2000')
             ok = True
-            if dfile2000 not in existing_file_set and ok:  
+            if dfile2000 not in existing_file_set and ok:
                 ok = resize_image(sfile, dfile2000, [2000,2000], quality=75)
             dfile0300 = sfile.replace("ORIGN",'S0300')
             if dfile0300 not in existing_file_set and ok:

@@ -38,7 +38,7 @@ docker run  --rm -t \
         -v ${rawin}:/p/in \
         -v ${vault}:/p/out \
         -v ${projectspace}:/work \
-        photoman python /work/src/photo_arrange.py --inputFolder /p/in --outputFolder /p/out 
+        photoman python /work/src/photo_arrange.py --input_folder /p/in --output_folder /p/out 
 
 
 set +x

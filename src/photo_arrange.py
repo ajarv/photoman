@@ -4,18 +4,13 @@ Created on Dec 29, 2011
 @author: AVashist
 '''
 
-import piexif
 import os
-import re
-import sys
 import time
 import shutil
-from os.path import join, getsize
-from PIL import Image,ImageFilter
+from os.path import join
 import argparse
 import logging
 import collections
-import datetime
 import i_util
 
 logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',level=logging.WARN)
@@ -105,6 +100,7 @@ def send_to_date_bins(destination,timetakenstr,file_list,dry_run=False,keep=Fals
             if not dry_run:
                 try:
                     shutil.move(sfile, dfile)
+                    # utime = time.mktime( [int(t) for t in timetakenstr.split('-')] + [0] * 6)
                 except:
                     logging.exception("xxxx")
                     print(f"Failed to move {sfile} -> {dfile}")
@@ -127,10 +123,10 @@ def parse_args():
     """Parse the args."""
     parser = argparse.ArgumentParser(
         description='Index Photos into a folder structure')
-    parser.add_argument('--inputFolder', type=str, required=False,
+    parser.add_argument('--input-folder', type=str, required=False,
                         default='sandbox',
                         help='Folder Path to Scan')
-    parser.add_argument('--outputFolder', type=str, required=False,
+    parser.add_argument('--output-folder', type=str, required=False,
                         default='vault',
                         help='Destination path for photos')
     parser.add_argument('--dry_run',
@@ -148,4 +144,4 @@ def parse_args():
 
 if __name__ == "__main__":
     args = parse_args()
-    arrange_files_by_date(args.inputFolder,args.outputFolder,dry_run= args.dry_run,keep=args.keep)
+    arrange_files_by_date(args.input_folder,args.output_folder,dry_run= args.dry_run,keep=args.keep)
