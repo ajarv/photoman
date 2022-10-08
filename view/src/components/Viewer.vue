@@ -1,13 +1,17 @@
 <template>
     <div id="viewer">
-        <div class="inner">
+        <div class="inner">            
             <div class="nav-next" v-on:click="selectNext()"></div>
             <div class="nav-previous" v-on:click="selectPrev()"></div>
         </div>
         <div class="slide active" v-if="img">
-            <div class="caption">
-                <h2>{{ img.title }}</h2>
-                <div v-html="img.content"></div>
+            <div class="caption">                
+                <p>{{ img.title }} 
+                    <a class="btn btn-primary" target="_blank" :href="img.metafield.image.imgix_url" role="button">Open</a>
+                    <a class="btn btn-primary" target="_blank" :href="img.metafield.image.imgix_url" role="button" download>Download Small</a>
+                    <a class="btn btn-primary" target="_blank" :href="img.metafield.image.imgix_url_orig" role="button" download>Download Large</a>
+                </p>
+                <!-- <div v-html="img.content"></div> -->
             </div>
             <div class="image" v-bind:style='{ backgroundImage: "url(" + img.metafield.image.imgix_url + ")", backgroundSize: "cover",  backgroundPosition: "center" }'>
             </div>
@@ -27,7 +31,8 @@ export default {
     },
     data () {
         return {
-            img: null
+            img: null,
+            years:[]
         }
     },
     methods: {
