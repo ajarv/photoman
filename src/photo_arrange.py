@@ -86,7 +86,10 @@ def send_to_date_bins(destination,timetakenstr,file_list,dry_run=False,keep=Fals
                 print (f"{timetakenstr}: KEEPING DEST {dfile} [{sz_dest}] >= [{sz_src}] {sfile}")
                 if not dry_run:
                     if not keep:
-                        os.remove(sfile)
+                        try:
+                            os.remove(sfile)
+                        except:
+                            print(f"Failed to remove {sfile}")
             else:
                 print (f"{timetakenstr}: UPDATING DEST {dfile} [{sz_dest}] < [{sz_src}] {sfile}")
                 dtemp = dfile+"_"

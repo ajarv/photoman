@@ -1,10 +1,13 @@
 #!/bin/bash
 
 projectspace=$(pwd)
-vault=/mnt/ssd/avashist/PhotoVault/vault
-rawin=/mnt/ssd/avashist/rawin
+
+#vault=/mnt/ssd/avashist/PhotoVault/vault
+#rawin=/mnt/ssd/avashist/rawin
 
 
+vault=/mnt/5tb/PhotoVault/vault
+rawin=/mnt/5tb/rawin
 
 docker run  -t  --rm \
 -v  ${vault}:/vault \
