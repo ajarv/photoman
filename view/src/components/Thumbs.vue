@@ -3,7 +3,6 @@
         <article v-for="(item, index) in items" v-bind:class="{ 'active': activeIndex == index }" v-bind:key="index">
             <a class="thumbnail" v-on:click="selectImage(item, index)">
                 <img v-bind:src="item.metafield.image.url" alt="" />
-                <!-- <img v-bind:id="'imix-'+index" alt="" /> -->
             </a>
             <h2>{{ item.title }}</h2>
             <div v-html="item.content"></div>
@@ -22,12 +21,12 @@ export default {
             this.activeIndex= 0;
             EventBus.$emit('loaded', this.items[this.activeIndex]);
         });
-        EventBus.$on('move', (dir) => {
-            this.activeIndex = this.activeIndex + dir;
-            if (dir > 0 && this.activeIndex >= this.items.length) {
+        EventBus.$on('move', (direction) => {
+            this.activeIndex = this.activeIndex + direction;
+            if (direction > 0 && this.activeIndex >= this.items.length) {
                 this.activeIndex = 0;
             }
-            if (dir < 0 && this.activeIndex < 0) {
+            if (direction < 0 && this.activeIndex < 0) {
                 this.activeIndex = this.items.length - 1;
             }
             EventBus.$emit('loaded', this.items[this.activeIndex]);

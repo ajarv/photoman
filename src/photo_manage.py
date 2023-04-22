@@ -44,7 +44,8 @@ def reject_file(origin_path):
     print (f"Moved to Rejects {origin_path} -> {rfile}")
 
 @timeit_w_args_n_r
-def resize_image(source_path, dest_path, size, ximage=None, quality=85, sharpen=True,_timeTaken=None):
+def resize_image(source_path, dest_path, size, ximage=None, quality=85,
+                 sharpen=True,_timeTaken=None):
     _dir = os.path.split(dest_path)[0]
     if not os.path.exists(_dir) : os.makedirs(_dir)
 
@@ -62,6 +63,12 @@ def resize_image(source_path, dest_path, size, ximage=None, quality=85, sharpen=
     exif_dict = piexif.load(source_path)
     # process im and exif_dict...
     w, h = image.size
+    logging.info(f"Image {source_path} - size {image.size} , tn size {size} ")
+    if  tuple(size) > tuple(image.size):
+        print(f"Requested thumbnail size {size} is larger than original size {image.size} .. copying")
+        shutil.copy(source_path,dest_path)
+        os.utime(dest_path, (timetaken, timetaken))
+        return
     exif_dict["0th"][piexif.ImageIFD.XResolution] = (w, 1)
     exif_dict["0th"][piexif.ImageIFD.YResolution] = (h, 1)
     if 'thumbnail' in exif_dict:

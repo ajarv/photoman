@@ -1,13 +1,5 @@
 <template>
     <header id="header">
-        <!-- <h1>{{ header }}</h1> -->
-        <!-- <div v-html="text"></div> -->
-        <!-- <ul class="icons">
-            <li><a :href="twitter" class="icon fa-twitter"><span class="label">Twitter</span></a></li>
-            <li><a :href="instagram" class="icon fa-instagram"><span class="label">Instagram</span></a></li>
-            <li><a :href="github" class="icon fa-github"><span class="label">Github</span></a></li>
-            <li><a :href="email" class="icon fa-envelope-o"><span class="label">Email</span></a></li>
-        </ul> -->
         <div  v-if="loggedin">
             <div>
                 <button v-for="(year, index) in years" v-bind:class="{ 'active': year_ == year }" v-bind:key="index" v-on:click="gotoYear(year)" >{{year}}</button>
@@ -41,8 +33,9 @@ function getImageObjects(flist){
                 "_id": "59833cb15ad4ceb321000925",
                 "bucket": "59833ca15ad4ceb321000922",
                 "slug": "beach",
-                "title": ""+f,
-                "content": "<p>"+f+"</p>",
+                "title": f,
+                "imageId" : f.replaceAll('/','_'),
+                "content": `<p>${f}</p>`,
                 "metafield": {
                     "image": {
                         "imgix_url": bu+'/S2000'+f,
@@ -153,9 +146,6 @@ export default {
         gotoDay: (day) =>{
             EventBus.$emit('day', day);
         }
-        
-
-
     }
 }
 </script>
