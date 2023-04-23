@@ -105,10 +105,11 @@ export default {
   created() {
     this.emitter.on("loaded", (item) => {
       this.img = item;
-      this.title = JSON.stringify(item);
+      this.title = item.file_name;
       this.blurred =
         item.tags.filter((tag) => tag == "ns0:blurred:1").length == 1;
       this.ugly = item.tags.filter((tag) => tag == "ns0:ugly:1").length == 1;
+      this.repeat = item.tags.filter((tag) => tag == "ns0:repeat:1").length == 1;
       this.favorite =
         item.tags.filter((tag) => tag == "ns0:favorite:1").length == 1;
     });

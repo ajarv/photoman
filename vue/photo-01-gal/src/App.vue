@@ -1,11 +1,13 @@
 <template>
   <div>
+    <v-app>
     <div id="main">
       <app-header></app-header>
       <thumbs></thumbs>
       <app-footer></app-footer>
     </div>
     <viewer></viewer>
+    </v-app>
   </div>
 </template>
 
