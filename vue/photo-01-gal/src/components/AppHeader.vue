@@ -1,8 +1,8 @@
 <template>
-    <header id="header">
+    <!-- <header id="header">
         <h1>{{ header }}</h1>
         <div v-html="text"></div>
-    </header>
+    </header> -->
 </template>
 
 <script>
