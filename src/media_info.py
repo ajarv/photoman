@@ -53,7 +53,7 @@ def process(quick, tag, strict, debug, color,input_folder,output_folder):
             newFolder = f"{output_folder}/{createdDate}"
             os.makedirs(newFolder, exist_ok=True)
             newFile = os.path.join(newFolder, file)
-            if newFile.exits(): 
+            if os.path.exists(newFile): 
                 continue
             try:
                 shutil.move(filename,newFile)
