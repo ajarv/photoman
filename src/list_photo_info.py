@@ -1,14 +1,19 @@
 
+from pathlib import Path
 import sys
 import argparse
 import logging
 import timeit
 from exifread.tags import DEFAULT_STOP_TAG, FIELD_TYPES
 from exifread import process_file, exif_log, __version__ 
+
 import os
 import shelve
+import click
 
 logger = exif_log.get_logger()
+
+
 
 
 def get_args():
@@ -98,7 +103,7 @@ def get_info(filename: str) -> dict:
 
     logger.debug("Tags processed in %s seconds", tag_stop - tag_start)
     logger.debug("File processed in %s seconds", file_stop - file_start)
-    print()
+    
     return rval
 
 def isImage(name):
@@ -117,9 +122,23 @@ def main(args) -> None:
         _cache.sync()
 
 
+@click.group(chain=True)
+@click.option('--debug/--no-debug', default=False)
+def cli(debug):
+    click.echo(f"Debug mode is {'on' if debug else 'off'}")
 
+
+
+@cli.command('info')
+@click.option('-i', '--input', type=click.File('r'),required=True)
+def media_info(input):
+    click.echo(f'info {input.name=}')
+
+
+    
 if __name__ == '__main__':
-    args = get_args()
-    main(args)
+    cli()
+    # args = get_args()
+    # main(args)
     # z = get_info(sys.argv[1])
     
