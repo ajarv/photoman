@@ -44,9 +44,10 @@ def cli():
 def process(quick, tag, strict, debug, color,input_folder,output_folder,input_file):
     exif_log.setup_logger(debug, color)
     if input_file:
-        rval = file_info(input_file, quick, tag, strict, debug, color)
-        print (rval)
-        return
+        filename = input_file
+        metadata = file_info(filename, quick, tag, strict, debug, color)
+        relocate(filename,metadata,output_folder)
+
     if input_folder:
         for root, dirs, files in os.walk(input_folder):
             for file in files:
@@ -54,19 +55,23 @@ def process(quick, tag, strict, debug, color,input_folder,output_folder,input_fi
                     or file.endswith(".jpg") or file.endswith(".png") ): continue
                 print("working on file",file )
                 filename = os.path.join(root, file)        
-                rval = file_info(filename, quick, tag, strict, debug, color)
-                createdDate = rval['createdTime'].split(" ")[0].replace("-","/")
-                newFolder = f"{output_folder}/{createdDate}"
-                os.makedirs(newFolder, exist_ok=True)
-                newFile = os.path.join(newFolder, file)
-                if os.path.exists(newFile): 
-                    continue
-                try:
-                    shutil.move(filename,newFile)
-                    print (f"Moved to {filename} -> {newFile}")        
-                except:
-                    print (f"Failed to move {filename} -> {newFile}")
-                    continue    
+                metadata = file_info(filename, quick, tag, strict, debug, color)
+                relocate(filename,metadata,output_folder)
+
+def relocate(filename,metadata,output_folder):
+    createdDate = metadata['createdTime'].split(" ")[0].replace("-","/").replace(":","/")
+    newFolder = f"{output_folder}/{createdDate}"
+    os.makedirs(newFolder, exist_ok=True)
+    newFile = os.path.join(newFolder, os.path.split(filename)[1])
+    if os.path.exists(newFile): 
+        print (f"Dest file {newFile} already exists")        
+        return
+    try:
+        shutil.move(filename,newFile)
+        print (f"Moved to {filename} -> {newFile}")        
+    except:
+        print (f"Failed to move {filename} -> {newFile}")
+            
 
         
 def file_info_(filename,quick, tag, strict, debug, color):
