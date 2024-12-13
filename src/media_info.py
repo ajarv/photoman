@@ -64,6 +64,13 @@ def process(quick, tag, strict, debug, color,input_folder,output_folder):
                 continue    
 
 
+def showdate(filename)
+    with open(img_file,'rb') as ifile:
+        data = process_file(ifile )
+    for k in list(data.keys()):
+        if 'Thumbnail' in k:
+            del data[k]
+        
 def file_info_(filename,quick, tag, strict, debug, color):
     escaped_fn  = filename.encode(
         sys.getfilesystemencoding(), 'surrogateescape'
@@ -129,14 +136,13 @@ def file_info(filename,quick, tag, strict, debug, color):
     except Exception as e:
         rval["error"] = f"failed file_file_info: {e}"
   
-    createdTime = None 
     if createdTime is None:
-        createdTime = extract_date_time(rval.get("EXIF DateTimeOriginal",""))
+        createdTime = extract_date_time(str(rval.get("EXIF DateTimeOriginal","")))
     if createdTime is None:
-        createdTime = extract_date_time(rval.get("EXIF DateTimeDigitized",""))
+        createdTime = extract_date_time(str(rval.get("EXIF DateTimeDigitized","")))
     if createdTime is None:
         createdTime = datetime.datetime.fromtimestamp(os.path.getctime(filename)).strftime("%Y-%m-%d %H:%M:%S")
-                    
+                   
     rval["createdTime"] = createdTime   
     return rval
 
