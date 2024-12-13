@@ -1,5 +1,6 @@
 import datetime
 import json
+import re
 import shutil
 import sys
 import timeit
@@ -111,6 +112,14 @@ def file_info_(filename,quick, tag, strict, debug, color):
     logger.debug("File processed in %s seconds", file_stop - file_start)
     return rval
 
+pat = re.compile('.*(?P<date_time>\d{4}.\d{2}.\d{2} \d{2}.\d{2}.\d{2}).*')
+
+def extract_date_time(date_time :   str):
+    m = pat.match(date_time)
+    if m:
+        return m.group("date_time")
+    return None
+
 def file_info(filename,quick, tag, strict, debug, color):
     rval = dict(filename=filename)    
     try:
@@ -120,10 +129,14 @@ def file_info(filename,quick, tag, strict, debug, color):
     except Exception as e:
         rval["error"] = f"failed file_file_info: {e}"
   
-    createdTime = rval["EXIF DateTimeOriginal"] if "EXIF DateTimeOriginal" in rval \
-        else rval["EXIF DateTimeDigitized"] if "EXIF DateTimeDigitized" in rval \
-            else datetime.datetime.fromtimestamp(os.path.getctime(filename)).strftime("%Y-%m-%d %H:%M:%S")
-            
+    createdTime = None 
+    if createdTime is None:
+        createdTime = extract_date_time(rval.get("EXIF DateTimeOriginal",""))
+    if createdTime is None:
+        createdTime = extract_date_time(rval.get("EXIF DateTimeDigitized",""))
+    if createdTime is None:
+        createdTime = datetime.datetime.fromtimestamp(os.path.getctime(filename)).strftime("%Y-%m-%d %H:%M:%S")
+                    
     rval["createdTime"] = createdTime   
     return rval
 
