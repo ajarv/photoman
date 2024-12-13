@@ -77,7 +77,7 @@ export default {
     });
 
     this.emitter.on("add_tag", (new_tag) => {
-      console.log(new_tag)
+      // console.log(new_tag)
       let item = this.items[this.activeIndex];
       let durl = `${API_BASE_URL}/obj/${item.id}/`;
       let toks = new_tag.split(':')
@@ -132,22 +132,23 @@ export default {
   },
   watch: {
     // whenever question changes, this function will run
-    year_index(old_index, new_index) {
+    year_index(new_index,old_index) {
       if (new_index >= this.year_tag_list.length) return;
       this.load_month_tags(new_index);
     },
-    month_index(old_index, new_index) {
+    month_index(new_index,old_index) {
       if (new_index >= this.month_tag_list.length) return;
+      // console.log(this.month_tag_list[old_index],this.month_tag_list[new_index])
       this.load_day_tags(new_index);
     },
-    day_index(old_index, new_index) {
+    day_index(new_index,old_index) {
       if (new_index >= this.day_tag_list.length) return;
       let day_tag = this.day_tag_list[new_index]
       this.day_selected = day_tag.value.split(':').slice(-1)
       this.offset = 0
       this.refresh_thumbs();
     },
-    offset(old_index, new_index) {
+    offset(new_index,old_index) {
       this.refresh_thumbs();
       return true;
     },
@@ -170,7 +171,7 @@ export default {
           item["url_0300"] = `${BASE_BUCKET_URL}/S0300/${item.key}`;
           item["url_2000"] = `${BASE_BUCKET_URL}/S2000/${item.key}`;
           item["url_ORIG"] = `${BASE_BUCKET_URL}/ORIGN/${item.key}`;
-          item["file_name"] = item.key.replace("/", "_");
+          item["file_name"] = item.key;
         });
         this.uprevious = response.data.previous;
         this.unext = response.data.next;
@@ -202,7 +203,7 @@ export default {
       if (ix === undefined) ix = this.month_index
       let month_tag = this.month_tag_list[ix]
       this.month_selected = month_tag.value.split(':').slice(-1)
-      const xurl = new URL(`${API_BASE_URL}/tag/?tag_query=:c_day:${month_tag.value}`);
+      const xurl = new URL(`${API_BASE_URL}/tag/?tag_query=:c_date:${month_tag.value}`);
       axios.get(xurl).then((response) => {
         this.day_tag_list = response.data.results;
         this.day_index = this.day_tag_list.length - 1;

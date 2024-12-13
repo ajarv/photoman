@@ -44,9 +44,9 @@ def process(quick, tag, strict, debug, color,input_folder,output_folder):
     
     for root, dirs, files in os.walk(input_folder):
         for file in files:
-            print("working on file",file )
             if not file.endswith(".JPG") or file.endswith(".jpeg")\
                 or file.endswith(".jpg") or file.endswith(".png"): continue
+            print("working on file",file )
             filename = os.path.join(root, file)        
             rval = file_info(filename, quick, tag, strict, debug, color)
             createdDate = rval['createdTime'].split(" ")[0].replace("-","/")
