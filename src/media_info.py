@@ -129,7 +129,6 @@ def file_info(filename,quick, tag, strict, debug, color):
     rval = dict(filename=filename)    
     try:
         infodict = file_info_(filename,quick, tag, strict, debug, color)
-        infodict = None
         if infodict: rval.update(infodict)
     except Exception as e:
         rval["error"] = f"failed file_file_info: {e}"
