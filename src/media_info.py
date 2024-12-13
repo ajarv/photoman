@@ -52,7 +52,10 @@ def process(quick, tag, strict, debug, color,input_folder,output_folder):
             createdDate = rval['createdTime'].split(" ")[0].replace("-","/")
             newFolder = f"{output_folder}/{createdDate}"
             os.makedirs(newFolder, exist_ok=True)
-            shutil.move(filename,newFolder)
+            newFile = os.path.join(newFolder, file)
+            if newFile.exits(): 
+                continue
+            shutil.move(filename,newFile)
             print (f"Moved to {filename} -> {newFolder}")        
 
 
