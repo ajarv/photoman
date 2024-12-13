@@ -55,8 +55,12 @@ def process(quick, tag, strict, debug, color,input_folder,output_folder):
             newFile = os.path.join(newFolder, file)
             if newFile.exits(): 
                 continue
-            shutil.move(filename,newFile)
-            print (f"Moved to {filename} -> {newFolder}")        
+            try:
+                shutil.move(filename,newFile)
+                print (f"Moved to {filename} -> {newFile}")        
+            except:
+                print (f"Failed to move {filename} -> {newFile}")
+                continue    
 
 
 def file_info_(filename,quick, tag, strict, debug, color):
