@@ -104,3 +104,9 @@ docker run  -t  --rm \
 
 ```
 
+
+
+
+
+# V1 ..
+python3 src/file_placer.py process --output-folder /mnt/sdb/misc/vault/pallavi --input-folder /mnt/sdb/misc/vault/tpal
