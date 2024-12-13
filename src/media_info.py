@@ -128,9 +128,8 @@ def file_info(filename,quick, tag, strict, debug, color):
         if infodict: rval.update(infodict)
     except Exception as e:
         rval["error"] = f"failed file_file_info: {e}"
-  
-    if createdTime is None:
-        createdTime = extract_date_time(str(rval.get("EXIF DateTimeOriginal","")))
+    
+    createdTime = extract_date_time(str(rval.get("EXIF DateTimeOriginal","")))
     if createdTime is None:
         createdTime = extract_date_time(str(rval.get("EXIF DateTimeDigitized","")))
     if createdTime is None:
