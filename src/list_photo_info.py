@@ -4,7 +4,7 @@ import argparse
 import logging
 import timeit
 from exifread.tags import DEFAULT_STOP_TAG, FIELD_TYPES
-from exifread import process_file, exif_log, __version__
+from exifread import process_file, exif_log, __version__ 
 import os
 import shelve
 
