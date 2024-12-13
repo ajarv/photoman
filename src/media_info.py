@@ -38,30 +38,35 @@ def cli():
     '-c', '--color', is_flag=True,
     help="Output in color (only works with debug on POSIX)."
 )
-@click.option('--input-folder', type=click.Path(exists=True, file_okay=False), required=True, help='Path to the input folder')
+@click.option('--input-folder', type=click.Path(exists=True, file_okay=False), required=False, help='Path to the input folder')
+@click.option('--input-file', type=click.Path(exists=True, file_okay=True), required=False, help='Path to file')
 @click.option('--output-folder', type=click.Path(exists=True, file_okay=False), required=True, help='Path to the output folder')
-def process(quick, tag, strict, debug, color,input_folder,output_folder):
+def process(quick, tag, strict, debug, color,input_folder,output_folder,input_file):
     exif_log.setup_logger(debug, color)
-    
-    for root, dirs, files in os.walk(input_folder):
-        for file in files:
-            if not (file.endswith(".JPG") or file.endswith(".jpeg")\
-                or file.endswith(".jpg") or file.endswith(".png") ): continue
-            print("working on file",file )
-            filename = os.path.join(root, file)        
-            rval = file_info(filename, quick, tag, strict, debug, color)
-            createdDate = rval['createdTime'].split(" ")[0].replace("-","/")
-            newFolder = f"{output_folder}/{createdDate}"
-            os.makedirs(newFolder, exist_ok=True)
-            newFile = os.path.join(newFolder, file)
-            if os.path.exists(newFile): 
-                continue
-            try:
-                shutil.move(filename,newFile)
-                print (f"Moved to {filename} -> {newFile}")        
-            except:
-                print (f"Failed to move {filename} -> {newFile}")
-                continue    
+    if input_file:
+        rval = file_info(input_file, quick, tag, strict, debug, color)
+        print (rval)
+        return
+    if input_folder:
+        for root, dirs, files in os.walk(input_folder):
+            for file in files:
+                if not (file.endswith(".JPG") or file.endswith(".jpeg")\
+                    or file.endswith(".jpg") or file.endswith(".png") ): continue
+                print("working on file",file )
+                filename = os.path.join(root, file)        
+                rval = file_info(filename, quick, tag, strict, debug, color)
+                createdDate = rval['createdTime'].split(" ")[0].replace("-","/")
+                newFolder = f"{output_folder}/{createdDate}"
+                os.makedirs(newFolder, exist_ok=True)
+                newFile = os.path.join(newFolder, file)
+                if os.path.exists(newFile): 
+                    continue
+                try:
+                    shutil.move(filename,newFile)
+                    print (f"Moved to {filename} -> {newFile}")        
+                except:
+                    print (f"Failed to move {filename} -> {newFile}")
+                    continue    
 
         
 def file_info_(filename,quick, tag, strict, debug, color):
