@@ -63,13 +63,6 @@ def process(quick, tag, strict, debug, color,input_folder,output_folder):
                 print (f"Failed to move {filename} -> {newFile}")
                 continue    
 
-
-def showdate(filename)
-    with open(img_file,'rb') as ifile:
-        data = process_file(ifile )
-    for k in list(data.keys()):
-        if 'Thumbnail' in k:
-            del data[k]
         
 def file_info_(filename,quick, tag, strict, debug, color):
     escaped_fn  = filename.encode(
